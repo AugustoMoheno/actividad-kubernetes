@@ -1,0 +1,14 @@
+# Disco de las notas. Sigue existiendo si el Pod de MariaDB se reinicia.
+# Hace falta una StorageClass por defecto en el clúster.
+# Comprobación: kubectl get storageclass
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: notas-db-pvc
+  namespace: actividad-k8s
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

@@ -1,0 +1,22 @@
+# Opcional. Aplicadlo solo si el clúster ya tiene un controlador Ingress
+# de clase nginx:
+#   kubectl apply -f k8s/opcional/08-ingress.yaml
+# Si la clase tiene otro nombre, cambiad ingressClassName.
+# Sin este fichero la web sigue accesible por el Service de k8s/07-web-service.yaml.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: notas-web
+  namespace: actividad-k8s
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: notas-web
+                port:
+                  number: 80

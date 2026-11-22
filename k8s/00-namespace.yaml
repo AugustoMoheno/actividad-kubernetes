@@ -1,0 +1,8 @@
+# Namespace de la práctica. El resto de ficheros lo usan.
+# Dejad el nombre actividad-k8s: está repetido en todos los manifiestos.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: actividad-k8s
+  labels:
+    app.kubernetes.io/part-of: notas

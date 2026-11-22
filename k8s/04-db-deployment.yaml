@@ -1,0 +1,79 @@
+# MariaDB, una réplica.
+# Cambiad USUARIO_DOCKERHUB por el usuario de Docker Hub del equipo.
+# Tiene que ser el mismo nombre usado en docker build y docker push.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notas-db
+  namespace: actividad-k8s
+  labels:
+    app: notas-db
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: notas-db
+  template:
+    metadata:
+      labels:
+        app: notas-db
+    spec:
+      securityContext:
+        fsGroup: 999
+      containers:
+        - name: mariadb
+          image: USUARIO_DOCKERHUB/notas-db:1.0
+          imagePullPolicy: Always
+          ports:
+            - name: mysql
+              containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: notas-db-secret
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: notas-db-secret
+                  key: MYSQL_DATABASE
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: notas-db-secret
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: notas-db-secret
+                  key: MYSQL_PASSWORD
+          volumeMounts:
+            - name: datos
+              mountPath: /var/lib/mysql
+          readinessProbe:
+            exec:
+              command: ["/usr/local/bin/healthcheck.sh", "--connect", "--innodb_initialized"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            exec:
+              command: ["/usr/local/bin/healthcheck.sh", "--connect"]
+            initialDelaySeconds: 40
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 768Mi
+      volumes:
+        - name: datos
+          persistentVolumeClaim:
+            claimName: notas-db-pvc

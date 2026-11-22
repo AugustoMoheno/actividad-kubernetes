@@ -1,0 +1,11 @@
+# Dirección interna de la base de datos.
+# DB_HOST es el nombre del Service de k8s/05-db-service.yaml.
+# Dejad estos valores si no renombráis ese Service.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: notas-config
+  namespace: actividad-k8s
+data:
+  DB_HOST: notas-db
+  DB_PORT: "3306"

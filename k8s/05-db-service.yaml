@@ -1,0 +1,17 @@
+# Nombre interno de MariaDB: notas-db.
+# La web lo usa como host. Este Service no abre la base de datos a internet.
+apiVersion: v1
+kind: Service
+metadata:
+  name: notas-db
+  namespace: actividad-k8s
+  labels:
+    app: notas-db
+spec:
+  type: ClusterIP
+  selector:
+    app: notas-db
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: mysql
